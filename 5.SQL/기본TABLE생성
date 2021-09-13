@@ -1,0 +1,31 @@
+								자료형(p.39)			자료형 - 기타			
+TABLE	C (p.310)	생성		CREATE TABLE TEST(
+                      									
+         ID VARCHAR2(4000),            
+            VARCHAR2==> 4000 바이트까지. 가변길이.BLOB 4기가까지 2진데이터 저장.
+            
+         PW CHAR(10),
+            CHAR==> 4000 바이트까지. 고정길이. BFILE 4기가까지 2진데이터파일 저장.		
+						
+         UM NUMBER(38),
+            NUMBER==> 최대 +-38자릿수의 숫자 저장. 					
+            
+         NUM2 NUMBER(4,2),            
+            예시 경우 전체 숫자자리 4자리이고 그 중 두자리가 소숫점 자리라는 뜻.					
+            
+         FLOATING_POINT NUMBER,
+            예시 경우 부동 소수점 자료형	부동소수점(참고)	
+            
+         CONTENTS CLOB,
+            CLOB==> 4기가까지 텍스트 저장.					
+            
+         WRITE_DATE DATE      );
+            DATE	날짜 데이터. 세기,연,월,일,시,분,초 저장 가능.			
+	--//생성(복사,데이터까지)		CREATE TABLE DEPT_T AS SELECT * FROM DEPT;		
+	R	테이블 칼럼 확인		DESC TEST;										
+	U	칼럼	칼럼 추가	ALTER TABLE 테이블명 ADD 칼럼명 NUMBER(3);										
+			칼럼 이름변경	ALTER TABLE 테이블명 RENAME COLUMN 기존칼럼명 TO 변경될칼럼명;										
+			칼럼 수정	ALTER TABLE 테이블명 MODIFY 칼럼명 NUMBER(5);										
+			칼럼 삭제	ALTER TABLE 테이블명 DROP COLUMN 칼럼명;										
+		테이블명 변경	        RENAME 기존테이블명 TO 변경될테이블명;										
+	D	테이블 삭제	        DROP TABLE 테이블명;										
