@@ -1,0 +1,82 @@
+
+
+데이터(레코드,행)	C	한번에 입력		
+-> INSERT INTO TEST VALUES('4','a','가',10);데이터(레코드,행)
+
+		시간 입력	칼럼 삭제	
+     -> INSERT INTO 테이블명 (HIREDATE) VALUES ('2021/09/06'); -- 연월일은 넣고 시분초는 0으로 들어감						
+     -> INSERT INTO 테이블명 (HIREDATE) VALUES ('2021-09-06');     
+     
+    ROUND 
+    SELECT SYSDATE, 
+        ROUND(SYSDATE, 'CC') AS FORMAT_CC,    --CC =(01/01/01) 년도기준으로 반올림 , 2050년 이전이면 01로 나옴
+        ROUND(SYSDATE, 'YYYY') AS FORMAT_YYYY,--YYYY=(22/01/01)해당월 기준으로 7/1 이상이면 반올림해서 22년으로 나옴
+        ROUND(SYSDATE, 'Q') AS FORMAT_Q,      --Q=(21/10/01) 각 분기의 두 번째 달의 16일 기준 반올림 처리함 
+        ROUND(SYSDATE, 'DDD') AS FORMAT_DDD,  --DDD=(21/09/03) 해당 일의 12시(정오)기준으로 반올림 처리함 
+        ROUND(SYSDATE, 'HH') AS FORMAT_HH     --해당일의 시간을 기준 당일 
+        FROM DUAL;
+        
+    TRUNC
+    SELECT SYSDATE, 
+        TRUNC(SYSDATE, 'CC') AS FORMAT_CC,    --CC =(01/01/01) 년도기준으로 반올림 , 2050년 이전이면 01로 나옴
+        TRUNC(SYSDATE, 'YYYY') AS FORMAT_YYYY,--YYYY=(21/01/01)해당월 기준으로 7/1 이상이면 버림해서 21년으로 나옴
+        TRUNC(SYSDATE, 'Q') AS FORMAT_Q,      --Q=(21/07/01) 각 분기의 두 번째 달의 16일 기준 버림 처리함 
+        TRUNC(SYSDATE, 'DDD') AS FORMAT_DDD,  --DDD=(21/09/02) 해당 일의 12시(정오)기준으로 버림 처리함 
+        TRUNC(SYSDATE, 'HH') AS FORMAT_HH     --해당일의 시간을 기준 당일 
+        FROM DUAL;
+		
+    현재 시간 입력	
+    -> INSERT INTO 테이블명 (HIREDATE) VALUES (SYSDATE); -- 현재 시간 입력										
+		
+    특정 항목만 입력		
+    -> INSERT INTO 테이블명 (ID) VALUES('1');
+    -> INSERT INTO 테이블명 (ID,NAME) VALUES('3','개');
+    입력하지 않은 칼럼들의 값은 NULL이 입력된다. ( DEFAULT 제약 조건을 건 칼럼의 경우 해당 디폴트 값이 자동 입력 됨)					
+	
+  
+  R	전체 칼럼과 행(데이터) 보기
+    ->SELECT * FROM 테이블명;										
+	  정렬해서 보기	오름차순(1>2>3...)	디폴트	
+    -> SELECT * FROM TEST ORDER BY ID;			ASC 안써줘도 기본으로 오름차순으로 정렬함						
+		
+    명시
+    -> SELECT * FROM 테이블명 ORDER BY ID ASC;	내림차순(3>2>1)
+    -> SELECT * FROM 테이블명 ORDER BY ID DESC;오름차순(1<2<3)
+		
+    정렬을 2개 이상 조건으로
+    -> SELECT NO,TITLE,WID,TO_CHAR(DATE_W,'YYYY/MM/DD HH24:MI:SS') FROM 테이블명 ORDER BY TITLE ASC, DATE_W DESC;
+		1차로 TITLE 을 기준으로 정렬하고, 그렇게 정렬된 상태에서 2차로 DATE_W 로 정렬함.
+		
+    볼 때 시간 값을 일정 형식으로 변환해서 보기
+    -> SELECT TO_CHAR(DATE_W,'YYYY/MM/DD HH24:MI:SS') FROM 테이블명;									
+														
+		조건	비교
+     -> SELECT * FROM 테이블명 WHERE ID >= 1;
+		널 아닌거
+     -> SELECT * FROM 테이블명 WHERE NUM IS NOT NULL;
+    널 인거
+     -> SELECT * FROM 테이블명 WHERE NUM IS NULL;										
+	
+  
+  U	하나 업데이트
+    -> UPDATE 테이블명 SET 변환하고싶은값(예:NUM) = 5 WHERE 칼럼명 = 3;										
+		
+    전 행 업데이트
+    -> UPDATE 테이블명 SET 칼럼명 = 5;
+    * 주의 * 테이블 내 모든 행 데이터가 한방에 다 업데이트 되므로 의도한게 아니면 업데이트 시 주의할 것.
+	
+  
+  D	1행 삭제		
+    -> DELETE 테이블명 WHERE 칼럼명 = 6;
+    -> DELETE 테이블명 WHERE 칼럼명 = 5;								
+		
+    전행 한번에 삭제 1(CASE1)
+    -> DELETE FROM MEMBER;
+    * 주의 * 테이블 내 모든 행 데이터가 한방에 다 지워지므로 의도한게 아니면 삭제 시 주의할 것.								
+		전행 한번에 삭제 2(CASE1)
+    ->TRUNCATE TABLE 테이블명;
+    * 테이블 내 모든 행 데이터 싹 지움. 테이블 구조는 남음. 다시 데이터 입력 가능.		
+    
+
+ 
+ 
