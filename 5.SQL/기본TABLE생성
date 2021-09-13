@@ -1,5 +1,5 @@
-								자료형(p.39)			자료형 - 기타			
-TABLE	C (p.310)	생성		CREATE TABLE TEST(
+자료형(p.39)
+TABLE	C (p.310) 생성 CREATE TABLE TEST(
                       									
          ID VARCHAR2(4000),            
             VARCHAR2==> 4000 바이트까지. 가변길이.BLOB 4기가까지 2진데이터 저장.
