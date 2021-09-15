@@ -42,7 +42,13 @@
     명시
     -> SELECT * FROM 테이블명 ORDER BY ID ASC;	내림차순(3>2>1)
     -> SELECT * FROM 테이블명 ORDER BY ID DESC;오름차순(1<2<3)
-		
+    
+    * 주의 * 정렬된 데이터를 몇개만 출력할려고 할 때:											
+	-- * ROWNUM을 이용해서 출력 내용을 몇개만 출력할려고 할 때 (특히 ORDER BY를 써서 정렬을 할 때).
+	SELECT ROWNUM, NO,이름,경기,득점,도움 FROM 선수기록 WHERE ROWNUM <= 3 ORDER BY 득점 DESC; --이상하게 나옴
+	--이렇게 서브쿼리까지 쓰는 방식으로 해야 정상 출력됨.
+	SELECT * FROM (SELECT * FROM 선수기록 ORDER BY 득점 DESC) WHERE ROWNUM <= 3; <<< 이건 일단 외우거나 그냥 이거 그대로 참고해서 쓰기	
+	
     정렬을 2개 이상 조건으로
     -> SELECT NO,TITLE,WID,TO_CHAR(DATE_W,'YYYY/MM/DD HH24:MI:SS') FROM 테이블명 ORDER BY TITLE ASC, DATE_W DESC;
 		1차로 TITLE 을 기준으로 정렬하고, 그렇게 정렬된 상태에서 2차로 DATE_W 로 정렬함.
