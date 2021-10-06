@@ -1,44 +1,44 @@
 서브쿼리		
-    설명을 위한 예시 SQL ( 순서대로 수행 )			
+설명을 위한 예시 SQL ( 순서대로 수행 )			
           
-          CREATE TABLE T1( NO NUMBER(1) );					
-					INSERT INTO T1 VALUES(1);					
-					INSERT INTO T1 VALUES(2);					
-					CREATE TABLE T2( NO NUMBER(1) );					
-					INSERT INTO T2 VALUES(1);					
-					INSERT INTO T2 VALUES(2);					
-					SELECT * FROM T1;					
-					SELECT COUNT(*) FROM T2;					
-					SELECT * FROM T1 WHERE NO = (SELECT COUNT(*) FROM T2);
-          * 서브쿼리	써서
-					SELECT * FROM T1 WHERE NO = 2;					
+        CREATE TABLE T1( NO NUMBER(1) );					
+	INSERT INTO T1 VALUES(1);					
+	INSERT INTO T1 VALUES(2);					
+	CREATE TABLE T2( NO NUMBER(1) );					
+	INSERT INTO T2 VALUES(1);					
+	INSERT INTO T2 VALUES(2);					
+	SELECT * FROM T1;					
+	SELECT COUNT(*) FROM T2;					
+	SELECT * FROM T1 WHERE NO = (SELECT COUNT(*) FROM T2);
+        * 서브쿼리	써서
+	SELECT * FROM T1 WHERE NO = 2;					
 										
-					SELECT * FROM T1 WHERE NO = 2;
-					SELECT * FROM T1 WHERE NO = (SELECT COUNT(*) FROM T2);
-          (결과가 같다.)
+	SELECT * FROM T1 WHERE NO = 2;
+	SELECT * FROM T1 WHERE NO = (SELECT COUNT(*) FROM T2);
+        (결과가 같다.)
 										
-					SELECT * FROM T1 WHERE NO <= (SELECT COUNT(*) FROM T2);
-          * 서브쿼리	써서
-					SELECT * FROM T1 WHERE NO <= 2;					
+	SELECT * FROM T1 WHERE NO <= (SELECT COUNT(*) FROM T2);
+        * 서브쿼리	써서
+	SELECT * FROM T1 WHERE NO <= 2;					
 					
-		설명을 위한 예시 SQL ( 순서대로 수행 ) 2
+설명을 위한 예시 SQL ( 순서대로 수행 ) 2
     
-          CREATE TABLE T1( NO NUMBER(1),VAL CHAR(9) );					
-					INSERT INTO T1 VALUES(1,'개');					
-					INSERT INTO T1 VALUES(2,'고양이');					
-					INSERT INTO T1 VALUES(3,'고양이');					
-					CREATE TABLE T2( NO NUMBER(1),VAL CHAR(9) );					
-					INSERT INTO T2 VALUES(1,'개');					
-					INSERT INTO T2 VALUES(2,'고양이');					
-					SELECT * FROM T1;					
-					SELECT * FROM T2;					
-					SELECT VAL FROM T2 WHERE NO = 2;					
-					SELECT * FROM T1 WHERE VAL = '고양이';					
-					SELECT * FROM T1 WHERE VAL = (SELECT VAL FROM T2 WHERE NO = 2);				
-					* 서브쿼리	써서
+        CREATE TABLE T1( NO NUMBER(1),VAL CHAR(9) );					
+	INSERT INTO T1 VALUES(1,'개');					
+	INSERT INTO T1 VALUES(2,'고양이');					
+	INSERT INTO T1 VALUES(3,'고양이');					
+	CREATE TABLE T2( NO NUMBER(1),VAL CHAR(9) );					
+	INSERT INTO T2 VALUES(1,'개');					
+	INSERT INTO T2 VALUES(2,'고양이');					
+	SELECT * FROM T1;					
+	SELECT * FROM T2;					
+	SELECT VAL FROM T2 WHERE NO = 2;					
+	SELECT * FROM T1 WHERE VAL = '고양이';					
+	SELECT * FROM T1 WHERE VAL = (SELECT VAL FROM T2 WHERE NO = 2);				
+	* 서브쿼리	써서
           
-		  		SELECT * FROM T1 WHERE VAL = '고양이';
-					SELECT * FROM T1 WHERE VAL = (SELECT VAL FROM T2 WHERE NO = 2);				
-          (결과가 같다.)
+	SELECT * FROM T1 WHERE VAL = '고양이';
+	SELECT * FROM T1 WHERE VAL = (SELECT VAL FROM T2 WHERE NO = 2);				
+        (결과가 같다.)
           
           
