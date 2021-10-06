@@ -1,28 +1,29 @@
 JOIN	등가조인(p.221)
-   설명을 위한 예시 SQL ( 순서대로 수행 )
+  설명을 위한 예시 SQL ( 순서대로 수행 )
    
-   -> CREATE TABLE T1( NO NUMBER(1) );
-   * 테이블 T1 생성					
-	
-  -> INSERT INTO T1 VALUES(1);
-  * 값 1 넣기(내부 조인)					
-	
-  -> INSERT INTO T1 VALUES(2);
+  테이블 T1 생성					
+  CREATE TABLE T1( NO NUMBER(1) );
+  
+  값 1 넣기(내부 조인)					
+  INSERT INTO T1 VALUES(1);
+  
   값 2 넣기(단순 조인)
-	조인을 쓴다하면 보통 이거 쓴거를 뜻함
-  ->CREATE TABLE T2( NO NUMBER(1), ID CHAR(1) );
-  * 테이블 T2 생성
+  INSERT INTO T1 VALUES(2);
+  * 조인을 쓴다하면 보통 이거 쓴거를 뜻함
   
-	->INSERT INTO T2 VALUES(1,'A');
-  * 값 1 넣기	값 A 넣기
+  테이블 T2 생성
+  CREATE TABLE T2( NO NUMBER(1), ID CHAR(1) );
   
-	->INSERT INTO T2 VALUES(2,'B');
-  * 값 2 넣기	값 B 넣기				
-	-> INSERT INTO T2 VALUES(3,'C');
-  * 값 3 넣기	값 C 넣기
+  값 1 넣기	값 A 넣기
+  INSERT INTO T2 VALUES(1,'A');
+  값 2 넣기	값 B 넣기				  
+  INSERT INTO T2 VALUES(2,'B');
+  값 3 넣기	값 C 넣기
+  INSERT INTO T2 VALUES(3,'C');
   
-	-> SELECT * FROM T1,T2;
-  * 그냥 조인	2 X 3 = 6 됨				
-	
-  -> SELECT * FROM T1,T2 WHERE T1.NO = T2.NO;
-  * 정상(?) 조인 2개만 나옴	T1의 NO와 T2의 NO가 서로 같은것만 골라내서 2개만 나옴.
+  그냥 조인	2 X 3 = 6 됨				
+  SELECT * FROM T1,T2;
+  
+  정상(?) 조인 2개만 나옴	T1의 NO와 T2의 NO가 서로 같은것만 골라내서 2개만 나옴.	
+  SELECT * FROM T1,T2 WHERE T1.NO = T2.NO;
+  
