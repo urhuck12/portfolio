@@ -1,7 +1,8 @@
 
 
-데이터(레코드,행)	C	한번에 입력		
--> INSERT INTO TEST VALUES('4','a','가',10);데이터(레코드,행)
+데이터(레코드,행)	C	한번에 입력
+
+	INSERT INTO TEST VALUES('4','a','가',10);데이터(레코드,행)
 
 		시간 입력	칼럼 삭제	
      -> INSERT INTO 테이블명 (HIREDATE) VALUES ('2021/09/06'); -- 연월일은 넣고 시분초는 0으로 들어감						
