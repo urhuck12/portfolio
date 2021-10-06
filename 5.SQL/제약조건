@@ -1,0 +1,103 @@
+제약조건	
+    C	
+    NOT NULL	널 안됨	
+    -> CREATE TABLE TEST( ID VARCHAR2(4000) NOT NULL );										
+		
+    UNIQUE	유일, 널허용	
+    -> CREATE TABLE TEST( ID VARCHAR2(4000) UNIQUE );										
+		
+    PRIMARY KEY(PK)	유일, 널도 안됨	
+    -> CREATE TABLE TEST( ID VARCHAR2(4000) PRIMARY KEY );										
+		
+    CHECK	조건절로 제약하기	이건 제약조건 이름 주세요(혹시 모를 제약 조건 삭제를 위해)
+    -> CREATE TABLE TEST( NO NUMBER(36) CONSTRAINT TEST_CR_CK CHECK(NO>0) );							
+		
+    DEFAULT(P.392)
+    기본값 지정
+    -> CREATE TABLE MEMBER( NO NUMBER(1), ID VARCHAR2(4000) DEFAULT '고양이' );										
+		
+    이렇게 부분 칼럼만 값을 넣고..
+    -> INSERT INTO MEMBER (NO) VALUES (1);			
+    -> SELECT * FROM MEMBER;			<< 고양이 입력한 적 없는데 셀렉트 해보면..					
+		1	고양이	<< 고양이가 디폴트로 들어감.							
+		
+    FOREIGN KEY 란?
+    지정한 테이블-열에 있는 값만 허용하겠다는 제약 걸기
+    
+    
+		(P.382)		
+    참조 할 테이블을 하나 만듬. 단, 참조할 열(칼럼)은 UNIQUE 나 PRIMARY KEY 여야 함.
+    -> CREATE TABLE MEMBER( ID VARCHAR2(4000) UNIQUE );
+		
+    FK	데어터 두어개 넣어주고
+    -> INSERT INTO MEMBER VALUES('NYANG4');
+    -> INSERT INTO MEMBER VALUES('NYANG5');
+    
+    제약조건을 걸 테이블을 생성. 		FOREIGN KEY	제약을 검.			        
+		-> CREATE TABLE TEST( ID VARCHAR2(4000) REFERENCES MEMBER(ID) );
+		
+    이건 잘 들어감. 이유? 참조할 테이블인 MEMBER 의 ID 칼럼에 있는 값이니까. 'NYANG4' , 'NYANG5' 가능.							
+    -> INSERT INTO TEST VALUES('NYANG4');
+    
+    에러: ORA-02291: 무결성 제약조건(SCOTT.SYS_C0011358)이 위배되었습니다- 부모 키가 없습니다 에러. 이유? 'NYANG4' , 'NYANG5' 가 아닌 값 넣어서.		
+		-> INSERT INTO TEST VALUES('NYANG6');
+    
+	R	
+    특정 테이블에 어떤 제약이 걸려있는지 확인하기
+    -> SELECT * FROM USER_CONSTRAINTS WHERE TABLE_NAME='M';
+    뒤에 테이블명 표시하기					
+	U	
+    NOT NULL	새로 조건 걸기
+    -> ALTER TABLE TEST MODIFY NO NUMBER(36) NOT NULL;									
+		
+    UNIQUE	새로 조건 걸기
+    -> ALTER TABLE TEST MODIFY NO NUMBER(36) UNIQUE;									
+		
+    PRIMARY KEY	새로 조건 걸기
+    -> ALTER TABLE TEST MODIFY NO NUMBER(36) PRIMARY KEY;									
+		
+    CHECK	새로 조건 걸기
+    -> ALTER TABLE TEST MODIFY NO CONSTRAINT TEST_CR_CK CHECK(NO>0);
+    *단, 기존에 데이터(행)이 있고 그 중에 해당 칼럼에 제약 조건에 위반된 값이 있는경우 에러남.				
+		-> ALTER TABLE TEST MODIFY( NO CONSTRAINT TEST_CR_CK CHECK(NO>0) );
+    *MODIFY 뒤에 괄호로 묶어도 됨.				
+		
+    새로 조건 걸기 + 자료형도 변경
+    -> ALTER TABLE TEST MODIFY NO NUMBER(36) CONSTRAINT TEST_CR_CK CHECK(NO>0);									
+		-> ALTER TABLE TEST MODIFY NO( NUMBER(36) CONSTRAINT TEST_CR_CK CHECK(NO>0) );
+    * MODIFY 뒤에 괄호로 묶어도 됨.				
+		
+    DEFAULT	새로 조건 걸기
+    -> ALTER TABLE TEST MODIFY NO NUMBER(36) DEFAULT 0;									
+		
+    FOREIGN KEY	새로 조건 걸기
+    -> ALTER TABLE 선수단 MODIFY POSITION REFERENCES POSITION_TYPE(POSITION);	
+    
+    
+	D	
+    NOT NULL	널 허용으로 바꾸기
+    -> ALTER TABLE TEST MODIFY ID VARCHAR2(4000) NULL;									
+		
+    UNIQUE	유니크 조건 없애기
+    -> ALTER TABLE TEST DROP UNIQUE(ID);
+    * 해당 칼럼을 ( ) 안에 표시.						
+		
+    PRIMARY KEY	PK(Primary Key) 조건 없애기
+    -> ALTER TABLE TEST DROP PRIMARY KEY;
+    * 칼럼 언급 안해도 됨.						
+		
+    CHECK	체크 제약조건 없애기
+    -> ALTER TABLE TEST DROP CONSTRAINT TEST_CR_CK;
+    *이건 제약조건 이름 주고 삭제						
+		
+    DEFAULT	다시 디폴트를 NULL로 바꾸기	
+    -> ALTER TABLE TEST MODIFY NO NUMBER(36) DEFAULT NULL;
+    
+		FOREIGN KEY	포린키 제약조건 없애기
+    -> SELECT * FROM USER_CONSTRAINTS WHERE TABLE_NAME='해당테이블명';
+    * 검색후	CONSTRAINT_NAME		값을 확인하고	
+		
+    -> ALTER TABLE CT DROP CONSTRAINT SYS_C0011379;
+    * 값 확인 할걸로(제약 이름) DROP CONSTRAINT 하기
+    
+    
