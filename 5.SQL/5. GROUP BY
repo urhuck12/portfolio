@@ -1,0 +1,29 @@
+GROUP BY		설명을 위한 예시 SQL ( 순서대로 수행 )			CREATE TABLE T( TYPE CHAR(9), VAL CHAR(9) );			테이블 T 생성						
+			값 넣기
+      INSERT INTO T VALUES('포유류','개');
+      INSERT INTO T VALUES('포유류','고양이');
+			INSERT INTO T VALUES('포유류','너굴맨');
+			INSERT INTO T VALUES('어류','광어');
+			INSERT INTO T VALUES('어류','상어');
+					
+      셀렉
+      SELECT * FROM T;			
+			
+      셀렉 개수 세기
+      SELECT COUNT(*) FROM T;									
+			
+      셀렉 개수 세기	어류만
+      SELECT COUNT(*) FROM T WHERE TYPE = '어류';
+      
+      셀렉 개수 세기	포유류만
+			SELECT COUNT(*) FROM T WHERE TYPE = '포유류';
+      
+      셀렉 개수 세기	둘다 표시	GROUP BY	써서
+			SELECT COUNT(*) FROM T GROUP BY TYPE;
+      
+      셀렉 개수 세기	둘다 표시	GROUP BY	써서	셀렉 칼럼에 타입도 같이 표시하기
+			SELECT TYPE, COUNT(*) FROM T GROUP BY TYPE;					
+			* 주의 * 셀렉 칼럼 나열 시 다른 일반 칼럼을 쓰면 에러남
+      
+      GROUP BY + HAVING		그룹바이로 본거에서 조건줘서 한번 더 걸러 보기		
+			SELECT TYPE, COUNT(*) FROM T GROUP BY TYPE HAVING TYPE='포유류';
