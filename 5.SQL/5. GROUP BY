@@ -32,3 +32,5 @@ GROUP BY
       
       GROUP BY + HAVING	 그룹바이로 본거에서 조건줘서 한번 더 걸러 보기		
       SELECT TYPE, COUNT(*) FROM T GROUP BY TYPE HAVING TYPE='포유류';
+      
+      
