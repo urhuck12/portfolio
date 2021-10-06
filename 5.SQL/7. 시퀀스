@@ -1,0 +1,27 @@
+시퀀스	
+  번호 1,2,3,4... 만들어주는 애							
+	C
+    기본 생성	
+    CREATE SEQUENCE SEQ_BD;
+  
+	옵션 INCREMENT BY n	n 씩 증가				
+			 MAXVALUE n	n 최대값 설정				
+			 MINVALUE n	n 최소값 설정				
+			 CYCLE	최대값 후 다시
+       NOCYCLE	최대값 후 다시 x		
+		
+  사용
+    INSERT INTO BD VALUES( SEQ_BD.NEXTVAL , '글제목');	
+    * 시퀸스 사용시 SEQ_BD . NEXTVAL	
+	
+  R	
+    가장 마지막으로 생성된 시퀀스 확인
+    SELECT SEQ_BD.CURRVAL FROM DUAL;				
+	
+  U	
+    변경
+    ALTER SEQUENCE SEQ_BD;					
+	
+  D
+    삭제
+    DROP SEQUENCE SEQ_BD;					
