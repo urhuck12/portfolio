@@ -1,12 +1,14 @@
 
 
-데이터(레코드,행)	C	한번에 입력
+데이터(레코드,행)	
+     C
+     한번에 입력
 
-	INSERT INTO TEST VALUES('4','a','가',10);데이터(레코드,행)
+     INSERT INTO TEST VALUES('4','a','가',10);데이터(레코드,행)
 
-		시간 입력	칼럼 삭제	
-     -> INSERT INTO 테이블명 (HIREDATE) VALUES ('2021/09/06'); -- 연월일은 넣고 시분초는 0으로 들어감						
-     -> INSERT INTO 테이블명 (HIREDATE) VALUES ('2021-09-06');     
+     시간 입력 칼럼 삭제	
+     INSERT INTO 테이블명 (HIREDATE) VALUES ('2021/09/06'); -- 연월일은 넣고 시분초는 0으로 들어감						
+     INSERT INTO 테이블명 (HIREDATE) VALUES ('2021-09-06');     
      
     ROUND 
     SELECT SYSDATE, 
@@ -27,61 +29,67 @@
         FROM DUAL;
 		
     현재 시간 입력	
-    -> INSERT INTO 테이블명 (HIREDATE) VALUES (SYSDATE); -- 현재 시간 입력										
+    INSERT INTO 테이블명 (HIREDATE) VALUES (SYSDATE); -- 현재 시간 입력										
 		
     특정 항목만 입력		
-    -> INSERT INTO 테이블명 (ID) VALUES('1');
-    -> INSERT INTO 테이블명 (ID,NAME) VALUES('3','개');
-    입력하지 않은 칼럼들의 값은 NULL이 입력된다. ( DEFAULT 제약 조건을 건 칼럼의 경우 해당 디폴트 값이 자동 입력 됨)					
+    INSERT INTO 테이블명 (ID) VALUES('1');
+    INSERT INTO 테이블명 (ID,NAME) VALUES('3','개');
+    * 입력하지 않은 칼럼들의 값은 NULL이 입력된다. ( DEFAULT 제약 조건을 건 칼럼의 경우 해당 디폴트 값이 자동 입력 됨)					
 	
   
-  R	전체 칼럼과 행(데이터) 보기
-    ->SELECT * FROM 테이블명;										
-	  정렬해서 보기	오름차순(1>2>3...)	디폴트	
-    -> SELECT * FROM TEST ORDER BY ID;			ASC 안써줘도 기본으로 오름차순으로 정렬함						
+  R
+  전체 칼럼과 행(데이터) 보기
+    SELECT * FROM 테이블명;										
+    정렬해서 보기	오름차순(1>2>3...)	디폴트	
+    
+    SELECT * FROM TEST ORDER BY ID;
+    ASC 안써줘도 기본으로 오름차순으로 정렬함						
 		
     명시
-    -> SELECT * FROM 테이블명 ORDER BY ID ASC;	내림차순(3>2>1)
-    -> SELECT * FROM 테이블명 ORDER BY ID DESC;오름차순(1<2<3)
+    SELECT * FROM 테이블명 ORDER BY ID ASC;	내림차순(3>2>1)
+    SELECT * FROM 테이블명 ORDER BY ID DESC;오름차순(1<2<3)
     
     * 주의 * 정렬된 데이터를 몇개만 출력할려고 할 때:											
-	-- * ROWNUM을 이용해서 출력 내용을 몇개만 출력할려고 할 때 (특히 ORDER BY를 써서 정렬을 할 때).
-	SELECT ROWNUM, NO,이름,경기,득점,도움 FROM 선수기록 WHERE ROWNUM <= 3 ORDER BY 득점 DESC; --이상하게 나옴
-	--이렇게 서브쿼리까지 쓰는 방식으로 해야 정상 출력됨.
-	SELECT * FROM (SELECT * FROM 선수기록 ORDER BY 득점 DESC) WHERE ROWNUM <= 3; <<< 이건 일단 외우거나 그냥 이거 그대로 참고해서 쓰기	
+    	   * ROWNUM을 이용해서 출력 내용을 몇개만 출력할려고 할 때 (특히 ORDER BY를 써서 정렬을 할 때).
+	   SELECT ROWNUM, NO,이름,경기,득점,도움 FROM 선수기록 WHERE ROWNUM <= 3 ORDER BY 득점 DESC; --이상하게 나옴
+	   이렇게 서브쿼리까지 쓰는 방식으로 해야 정상 출력됨.
+	   SELECT * FROM (SELECT * FROM 선수기록 ORDER BY 득점 DESC) WHERE ROWNUM <= 3; <<< 이건 일단 외우거나 그냥 이거 그대로 참고해서 쓰기	
 	
     정렬을 2개 이상 조건으로
-    -> SELECT NO,TITLE,WID,TO_CHAR(DATE_W,'YYYY/MM/DD HH24:MI:SS') FROM 테이블명 ORDER BY TITLE ASC, DATE_W DESC;
-		1차로 TITLE 을 기준으로 정렬하고, 그렇게 정렬된 상태에서 2차로 DATE_W 로 정렬함.
+    SELECT NO,TITLE,WID,TO_CHAR(DATE_W,'YYYY/MM/DD HH24:MI:SS') FROM 테이블명 ORDER BY TITLE ASC, DATE_W DESC;
+    * 1차로 TITLE 을 기준으로 정렬하고, 그렇게 정렬된 상태에서 2차로 DATE_W 로 정렬함.
 		
     볼 때 시간 값을 일정 형식으로 변환해서 보기
-    -> SELECT TO_CHAR(DATE_W,'YYYY/MM/DD HH24:MI:SS') FROM 테이블명;									
+    SELECT TO_CHAR(DATE_W,'YYYY/MM/DD HH24:MI:SS') FROM 테이블명;									
 														
-		조건	비교
-     -> SELECT * FROM 테이블명 WHERE ID >= 1;
-		널 아닌거
-     -> SELECT * FROM 테이블명 WHERE NUM IS NOT NULL;
+    조건	비교
+    SELECT * FROM 테이블명 WHERE ID >= 1;
+    널 아닌거
+    SELECT * FROM 테이블명 WHERE NUM IS NOT NULL;
     널 인거
-     -> SELECT * FROM 테이블명 WHERE NUM IS NULL;										
+    SELECT * FROM 테이블명 WHERE NUM IS NULL;										
 	
   
-  U	하나 업데이트
-    -> UPDATE 테이블명 SET 변환하고싶은값(예:NUM) = 5 WHERE 칼럼명 = 3;										
+  U
+  하나 업데이트
+    UPDATE 테이블명 SET 변환하고싶은값(예:NUM) = 5 WHERE 칼럼명 = 3;										
 		
     전 행 업데이트
-    -> UPDATE 테이블명 SET 칼럼명 = 5;
+    UPDATE 테이블명 SET 칼럼명 = 5;
     * 주의 * 테이블 내 모든 행 데이터가 한방에 다 업데이트 되므로 의도한게 아니면 업데이트 시 주의할 것.
 	
   
-  D	1행 삭제		
-    -> DELETE 테이블명 WHERE 칼럼명 = 6;
-    -> DELETE 테이블명 WHERE 칼럼명 = 5;								
+  D
+  1행 삭제		
+    DELETE 테이블명 WHERE 칼럼명 = 6;
+    DELETE 테이블명 WHERE 칼럼명 = 5;								
 		
     전행 한번에 삭제 1(CASE1)
-    -> DELETE FROM MEMBER;
+    DELETE FROM MEMBER;
     * 주의 * 테이블 내 모든 행 데이터가 한방에 다 지워지므로 의도한게 아니면 삭제 시 주의할 것.								
-		전행 한번에 삭제 2(CASE1)
-    ->TRUNCATE TABLE 테이블명;
+    
+    전행 한번에 삭제 2(CASE1)
+    TRUNCATE TABLE 테이블명;
     * 테이블 내 모든 행 데이터 싹 지움. 테이블 구조는 남음. 다시 데이터 입력 가능.		
     
 
