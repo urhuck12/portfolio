@@ -1,0 +1,328 @@
+http://junil-hwang.com/blog/%ec%a0%95%eb%b3%b4%ec%b2%98%eb%a6%ac%ec%82%b0%ec%97%85%ea%b8%b0%ec%82%ac-%ec%88%98%ea%b0%95%ec%8b%a0%ec%b2%ad%eb%8f%84%ec%9a%b0%eb%af%b8/
+퍼온거
+--------------index.jsp-------------------------
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%@ include file="header.jsp" %>
+<%
+    /* next value 가져오기 */
+    sql = "SELECT count(*) as cnt from sys.course_tbl";
+    ResultSet res = conn.prepareStatement(sql).executeQuery();
+    int cnt = 0;
+    if (res.next()) cnt = res.getInt(1);
+%>
+<h2>교과목 목록</h2>
+<p>총 <%= cnt %>개의 교과목이 있습니다.</p>
+<table>
+    <colgroup>
+        <col width="10%">
+        <col width="30%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+    </colgroup>
+    <thead>
+        <tr>
+            <th>과목코드</th>
+            <th>과목명</th>
+            <th>학점</th>
+            <th>담당강사</th>
+            <th>요일</th>
+            <th>시작시간</th>
+            <th>종료시간</th>
+            <th>관리</th>
+        </tr>
+    </thead>
+    <tbody>
+        <%
+  ********************************중요함*****************************************************
+            /* 회원정보 list 가져오기 */
+            sql  = "SELECT c.*, l.name as lecturer_name "
+                 + "FROM sys.course_tbl c "
+                 + "JOIN sys.lecturer_tbl l on c.lecturer = l.idx "
+                 + "order by c.id asc";
+********************************중요함*****************************************************
+            res = conn.prepareStatement(sql).executeQuery();
+            String id, name, credit, lecturer_name, week, start_hour, end_end;
+            while (res.next()) {
+                id            = res.getString("id");
+                name          = res.getString("name");
+                credit        = res.getString("credit");
+                lecturer_name = res.getString("lecturer_name");
+                week          = res.getString("week");
+                start_hour    = res.getString("start_hour");
+                end_end       = res.getString("end_end");
+        %>
+        <tr style="text-align:center;">
+            <td><%= id %></td>
+            <td><%= name %></td>
+            <td><%= credit %></td>
+            <td><%= lecturer_name %></td>
+            <td><%= week %></td>
+            <td><%= start_hour %></td>
+            <td><%= end_end %></td>
+            <td>
+                <a href="./update.jsp?id=<%= id %>">수정</a> /
+                <a href="./delete.jsp?id=<%= id %>" onclick="if(!confirm('정말로 삭제하시겠습니까?')) return false;">삭제</a>
+            </td>
+        </tr>
+        <%
+            }
+        %>
+    </tbody>
+</table>
+<div class="btn_group right">
+    <button type="button" onclick="location.href = './write.jsp'">작성</button>
+</div>
+<%@ include file="footer.jsp" %>
+-----------------------------------------------------------------------
+------------------write.jsp-----------------------------------------
+5. write.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%@ include file="header.jsp" %>
+<%
+    /* next value 가져오기 */
+    sql = "SELECT * FROM sys.lecturer_tbl order by idx asc";
+    ResultSet res = conn.prepareStatement(sql).executeQuery();
+    String idx, name;
+%>
+<div>
+    <form action="./action.jsp" method="post">
+        <fieldset><legend>교과목 추가</legend>
+            <input type="hidden" name="action" value="insert">
+            <ul>
+                <li>
+                    <label>
+                        <span>교과목 코드 :</span>
+                        <input type="text" name="id" size="20" required>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <span>과목명 :</span>
+                        <input type="text" name="name" size="20" required>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <span>학점 :</span>
+                        <input type="text" name="credit" size="20" required>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <span>담당강사 :</span>
+                        <select name="lecturer" required>
+                            <option value="">담당강사 선택</option>
+                            <%
+                                while (res.next()) {
+                                    idx = res.getString("idx");
+                                    name = res.getString("name");
+                            %>
+                            <option value="<%= idx %>"><%= name %></option>
+                            <% }  %>
+                        </select>
+                    </label>
+                </li>
+                <li>
+                    <span>요일 :</span>
+                    <label><input type="radio" name="week" value="1" checked> 월</label>
+                    <label><input type="radio" name="week" value="2"> 화</label>
+                    <label><input type="radio" name="week" value="3"> 수</label>
+                    <label><input type="radio" name="week" value="4"> 목</label>
+                    <label><input type="radio" name="week" value="5"> 금</label>
+                    <label><input type="radio" name="week" value="6"> 토</label>
+                </li>
+                <li>
+                    <label>
+                        <span>시작 :</span>
+                        <input type="text" name="start_hour" size="20" required>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <span>종료 :</span>
+                        <input type="text" name="end_end" size="20" required>
+                    </label>
+                </li>
+            </ul>
+            <div class="btn_group">
+                <button type="button" onclick="history.back(); return false;">목록</button>
+                <button type="submit">완료</button>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<%@ include file="footer.jsp" %>
+write.jsp에서 핵심은 select 태그로 강사 목록을 선택하는 부분입니다.
+
+따라서 강사 목록에 대한 쿼리문을 작성해야 하며, select의 option 부분에서 while로 반복하여 강사 정보를 출력합니다. value값은 강사 데이터의 idx 값이 들어가며, 실제로 보여지는 것은 강사 데이터의 name이 보여집니다.
+
+form을 작성 후 전송하면 action.jsp에서 일괄적으로 처리합니다. 이 때 name="action"에서 지정한 값을 통하여 driven 할 수 있도록 작성할 것입니다.
+
+--------------------------------------------------------------------- ---------------------------------------------------------------------
+
+6. update.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%@ include file="header.jsp" %>
+<%
+    /* next value 가져오기 */
+    String id, name, credit, lecturer, week, start_hour, end_end, lecturer_idx, lecturer_name, sel;
+    id  = request.getParameter("id");
+    sql = "SELECT * FROM sys.course_tbl where id = "+id;
+    ResultSet res;
+    res = conn.prepareStatement(sql).executeQuery();
+    res.next();
+    name       = res.getString("name");
+    credit     = res.getString("credit");
+    lecturer   = res.getString("lecturer");
+    week       = res.getString("week");
+    start_hour = res.getString("start_hour");
+    end_end    = res.getString("end_end");
+
+    sql = "SELECT * FROM sys.lecturer_tbl order by idx asc";
+    res = conn.prepareStatement(sql).executeQuery();
+%>
+<div>
+    <form action="./action.jsp" method="post">
+        <fieldset><legend>교과목 수정</legend>
+            <input type="hidden" name="action" value="update">
+            <ul>
+                <li>
+                    <label>
+                        <span>교과목 코드 :</span>
+                        <input type="text" name="id" size="20" value="<%= id %>" required>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <span>과목명 :</span>
+                        <input type="text" name="name" size="20" value="<%= name %>" required>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <span>학점 :</span>
+                        <input type="text" name="credit" size="20" value="<%= credit %>" required>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <span>담당강사 :</span>
+                        <select name="lecturer" required>
+                            <option value="">담당강사 선택</option>
+                            <%
+                                while (res.next()) {
+                                    lecturer_idx = res.getString("idx");
+                                    lecturer_name = res.getString("name");
+                                    sel = "";
+                                    if (lecturer_idx.equals(lecturer)) sel = " selected";
+                            %>
+                            <option value="<%= lecturer_idx %>"<%=sel %>><%= lecturer_name %></option>
+                            <% }  %>
+                        </select>
+                    </label>
+                </li>
+                <li>
+                    <span>요일 :</span>
+                    <label><input type="radio" name="week" value="1"<%= week.equals("1") ? " checked" : "" %>> 월</label>
+                    <label><input type="radio" name="week" value="2"<%= week.equals("2") ? " checked" : "" %>> 화</label>
+                    <label><input type="radio" name="week" value="3"<%= week.equals("3") ? " checked" : "" %>> 수</label>
+                    <label><input type="radio" name="week" value="4"<%= week.equals("4") ? " checked" : "" %>> 목</label>
+                    <label><input type="radio" name="week" value="5"<%= week.equals("5") ? " checked" : "" %>> 금</label>
+                    <label><input type="radio" name="week" value="6"<%= week.equals("6") ? " checked" : "" %>> 토</label>
+                </li>
+                <li>
+                    <label>
+                        <span>시작 :</span>
+                        <input type="text" name="start_hour" value="<%= start_hour %>" size="20" required>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <span>종료 :</span>
+                        <input type="text" name="end_end" value="<%= end_end %>" size="20" required>
+                    </label>
+                </li>
+            </ul>
+            <div class="btn_group">
+                <button type="button" onclick="history.back(); return false;">목록</button>
+                <button type="submit">완료</button>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<%@ include file="footer.jsp" %>
+update.jsp에서 기존 과목 정보를 불러온 후 input에 출력해줘야 합니다.
+
+이 때, select와 radio로 저장해놓은 정보는 value에 넣어봤자 매칭 되지 않기 때문에, checked와 selected를 통하여 매핑을 해야 합니다.
+
+------------------------------------------------------------------------------------------------------------------------------------------ 
+
+7. action.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%@ include file="dbConnection.jsp" %>
+<%
+    String action = request.getParameter("action");
+    PreparedStatement pstmt = null;
+    
+    /**
+     * write.jsp, view.jsp, update.jsp에서 form을 전송할 때
+     * action을 hidden값으로 전송한다. 해당 값에 맞는 명령을 수행하도록  작성 
+     */
+    switch (action) {
+    case "insert" :
+        sql   = "INSERT INTO sys.course_tbl values(?,?,?,?,?,?,?)";
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, request.getParameter("id"));
+        pstmt.setString(2, request.getParameter("name"));
+        pstmt.setString(3, request.getParameter("credit"));
+        pstmt.setString(4, request.getParameter("lecturer"));
+        pstmt.setString(5, request.getParameter("week"));
+        pstmt.setString(6, request.getParameter("start_hour"));
+        pstmt.setString(7, request.getParameter("end_end"));
+        break;
+    case "update" :
+        sql   = "update sys.course_tbl SET name = ?, credit = ?, lecturer = ?, week = ?, start_hour = ?, end_end = ? where id = ?";
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, request.getParameter("name"));
+        pstmt.setString(2, request.getParameter("credit"));
+        pstmt.setString(3, request.getParameter("lecturer"));
+        pstmt.setString(4, request.getParameter("week"));
+        pstmt.setString(5, request.getParameter("start_hour"));
+        pstmt.setString(6, request.getParameter("end_end"));
+        pstmt.setString(7, request.getParameter("id"));
+        break;
+    }
+    pstmt.executeQuery();
+%>
+<script>
+    alert('완료되었습니다.');
+    location.replace('./');
+</script>
+action.jsp에서 모든 form 전송을 처리합니다.
+
+처리 완료 후 script 부분에서 페이지 이동을 담당합니다.
+
+ ------------------------------------------------------------------------------------------------------------------------------------------
+
+8. delete.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%@ include file="dbConnection.jsp" %>
+<%
+    String id = request.getParameter("id");
+    sql = "DELETE FROM sys.course_tbl where id = "+id;
+    conn.prepareStatement(sql).executeUpdate();
+%>
+<script>
+    alert('완료되었습니다.');
+    location.replace('./');
+</script>
+delete는 따로 form을 전송할 필요 없이 바로 실행해주면 됩니다. 여기에서 과목 데이터의 삭제를 담당합니다.
