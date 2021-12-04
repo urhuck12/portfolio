@@ -1,0 +1,400 @@
+-- 테이블 생성 전 권한부여
+grant create table, create sequence to system;
+
+-- 생성 후 CRUD 권한부여
+grant insert,update,delete,select on 테이블명 to system;
+
+-- 게시물에 대한 시퀀스 추가
+create sequence 시퀸스명 start with 1 increment by 1 minvalue 1 cache 10;
+
+-----------index.jsp----------------------
+<%@page import="DBC.DB"%>
+<%@page import="java.sql.*"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<jsp:include page="header.jsp"></jsp:include>
+	<section style="  float:left; top: 55px; width: 100%; height: 700px; border: 2px solid black;">
+		<%
+		request.setCharacterEncoding("utf-8");
+		Connection con = null;
+		Statement stm = null;
+		String idx = "";
+		
+		try{
+			con = DB.getConnection();
+			stm = con.createStatement();
+			String sql = "SELECT COUNT(idx) as idx FROM board_tbl";
+			ResultSet rs = stm.executeQuery(sql);
+			rs.next();
+			idx = rs.getString("idx");
+		}catch(Exception e){
+			e.printStackTrace();
+		}	
+		
+		%>
+		<h3 style="margin-left: 20px;">총 <%=idx %>개의 게시물이 있습니다.</h3>
+
+			<form
+				style="display: flex; text-align: center; justify-content: center; align-items: center;">
+				<div>
+				<table border="1" style="float: left;">				
+
+					<tr style="background-color: lime;">
+          
+						<td>번호</td>
+						<td>작성자</td>
+						<td>제목</td>
+						<td>작성일</td>
+					</tr>
+
+					<%					
+					try {
+						con = DB.getConnection();
+						stm = con.createStatement();
+						String sql = "SELECT * FROM board_tbl";
+						ResultSet rs = stm.executeQuery(sql);
+						while (rs.next()) {
+					%>
+					<tr>
+						<td><%=rs.getString("idx")%></td>
+						<td><%=rs.getString("writer")%></td>
+						<td><a href="view.jsp?idx=<%=rs.getString("idx")%>"><%=rs.getString("subject")%></a></td>
+						<td><%=rs.getString("date_")%></td>
+					</tr>
+
+					<%
+					}
+					} catch (Exception e) {
+					e.printStackTrace();
+					}
+					%>
+
+				</table>
+				</div>
+			</form>
+				<div style="float:left; width: 100%; height: 50px; margin-left: 580px; margin-top: 15px;">		
+					<input type="button" value="작성" onclick="location.href='write.jsp'">		
+				</div>
+
+	</section>
+	<jsp:include page="footer.jsp"></jsp:include>
+
+</body>
+</html>
+---------------------------------------------
+---------view.jsp
+<%@page import="DBC.DB"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%@ include file="header.jsp" %>
+<%
+request.setCharacterEncoding("utf-8");
+	Connection con =null;
+	Statement stm =null;
+	String writer ="";
+	String subject="";
+	String content_="";
+	String date_ = "";
+
+    String idx = request.getParameter("idx");
+    try{
+		con = DB.getConnection();
+		stm = con.createStatement();
+		String sql = "SELECT subject,writer,content_,date_ FROM board_tbl WHERE idx= "+ idx ;
+		ResultSet rs = stm.executeQuery(sql);		
+		rs.next();	
+		writer = rs.getString("writer");
+		subject = rs.getString("subject");
+		content_ = rs.getString("content_");
+		date_ = rs.getString("date_");
+		
+    } catch(Exception e){
+    	e.printStackTrace();
+    }
+
+%>
+<h2>게시물 조회</h2>
+<ul>
+    <li>글번호 : <%= idx %></li>
+    <li>작성자 : <%=writer %></li>
+    <li>제목 : <%= subject %></li>
+    <li>작성일 : <%= date_ %></li>
+    <li>내용 : <%= content_ %></li>
+</ul>
+<h2>댓글 조회</h2>
+<ul>
+    <%
+    try{		
+		con = DB.getConnection();
+		stm = con.createStatement();
+		String sql = "select c.idx, c.writer, c.content_, c.date_ "
+					+"from comment_tbl c , board_tbl b " 
+					+"where b.idx = "+idx+"and c.bidx = b.idx ";
+		
+		ResultSet rs = stm.executeQuery(sql);
+				
+		while(rs.next()){
+			%>
+			<li>			
+				<%=rs.getString("writer") %> / 
+				<%=rs.getString("content_") %> /
+				<%=rs.getString("date_") %> /
+				<a href="comment_delete.jsp?idx=<%=rs.getString("idx")%>">삭제</a>
+			</li>
+			
+		<%
+		}
+	}catch(Exception e){
+		e.printStackTrace();
+	}
+
+ %>
+</ul>
+<div>
+    <form action="./action.jsp?idx=<%= idx %>" method="post">
+        <fieldset><legend>댓글작성</legend>
+            <input type="hidden" name="action" value="comment_insert">
+            <input type="text" name="writer" size="10" placeholder="작성자">
+            <input type="text" name="content" size="80" placeholder="내용">
+            <button type="submit">작성완료</button>
+        </fieldset>
+    </form>
+</div>
+<div>
+    <button type="button" onclick="history.back(); return false;">목록</button>
+    <button type="button" onclick="location.href = './update.jsp?idx=<%= idx %>'">수정</button>
+    <button type="button" onclick="if(!confirm('정말로 삭제하시겠습니까?')) return false; location.href = './delete.jsp?idx=<%= idx %>'">삭제</button>
+</div>
+<%@ include file="footer.jsp" %>
+
+-----------------------------------------------------
+-----------wirie.jsp----------------------------
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*"%>
+<%@ include file="header.jsp"%>
+
+<div>
+	<form action="./action.jsp" method="post">
+		<fieldset>
+			<legend>게시물 작성</legend>
+			<input type="hidden" name="action" value="board_insert">
+			<ul>
+				<li><label> <span>작성자 :</span> <input type="text"
+						name="writer" size="20" required>
+				</label></li>
+				<li><label> <span>제목 :</span> <input type="text"
+						name="subject" size="20" required>
+				</label></li>
+				<li><label> <span>내용 :</span> <textarea name="content"
+							cols="80" rows="5" required></textarea>
+				</label></li>
+			</ul>
+			<div class="btn_group">
+				<button type="button" onclick="history.back(); return false;">취소</button>
+				<button type="submit">전송</button>
+			</div>
+		</fieldset>
+	</form>
+</div>
+<%@ include file="footer.jsp"%>
+---------------------------------------------------------
+-----------------update.jsp-------------------------
+<%@page import="DBC.DB"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%@ include file="header.jsp" %>
+<%
+request.setCharacterEncoding("utf-8");
+	Connection con =null;
+	Statement stm =null;
+	String writer ="";
+	String subject="";
+	String content_="";
+	String date_ = "";
+	    
+	String idx = request.getParameter("idx");
+    
+    try{
+		con = DB.getConnection();
+		stm = con.createStatement();	
+   		String sql = "SELECT * from board_tbl where idx = "+idx;
+	    ResultSet rs = stm.executeQuery(sql);
+	    rs.next();
+	    writer = rs.getString("writer");
+	    subject = rs.getString("subject");
+	    content_ = rs.getString("content_");
+    } catch(Exception e){
+    	e.printStackTrace();
+    }
+%>
+<div>
+    <form action="./action.jsp?idx=<%= idx %>" method="post">
+        <fieldset><legend>게시물 작성</legend>
+            <input type="hidden" name="action" value="board_update">
+            <ul>
+                <li>
+                    <label>
+                        <span>작성자 :</span>
+                        <input type="text" name="writer" value="<%= writer %>" size="20" required>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <span>제목 :</span>
+                        <input type="text" name="subject" value="<%= subject %>" size="20" required>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <span>내용 :</span>
+                        <textarea name="content" cols="80" rows="5" required><%=content_ %></textarea>
+                    </label>
+                </li>
+            </ul>
+            <div class="btn_group">
+                <button type="button" onclick="history.back(); return false;">취소</button>
+                <button type="submit">전송</button>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<%@ include file="footer.jsp" %>
+--------------------------------------------------------------------------
+----------action.jsp-------------------------------------
+<%@page import="DBC.DB"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+
+<%
+	request.setCharacterEncoding("utf-8");
+	Connection con =null;
+	Statement stm =null;
+	
+  String action = request.getParameter("action");
+    
+	String idx = request.getParameter("idx");
+	String writer = request.getParameter("writer");
+	String subject = request.getParameter("subject");
+	String content_ = request.getParameter("content");
+
+	try{
+		con = DB.getConnection();
+		stm = con.createStatement();
+    	String sql = " " ;
+
+    switch (action) {
+    case "board_insert" :
+        sql = "INSERT INTO board_tbl values(no_idx.NEXTVAL,"+
+    										"'"+ writer +"',"+ 
+    										"'"+ subject +"',"+ 
+    										"'"+ content_ +"', SYSDATE)";
+        stm.executeUpdate(sql);
+        break;
+    case "comment_insert" :
+        sql = "INSERT INTO comment_tbl values(co_idx.NEXTVAL,"+
+											"'"+ idx +"',"+ 
+											"'"+ writer +"',"+ 
+											"'"+ content_ +"', SYSDATE)";						
+
+        stm.executeUpdate(sql);
+        break;
+    case "board_update" :
+        sql  = "update board_tbl SET "+
+    							"writer= '" +writer+ "',"+ 
+    							"subject= '" +subject+ "',"+ 
+    							"content_= '" +content_+ "' "+     							
+    							"WHERE idx= " + idx;
+
+        stm.executeUpdate(sql);
+        break;
+    }
+	
+	} catch(Exception e){
+		e.printStackTrace();
+	}
+    
+%>
+<script>
+    alert('완료되었습니다.');
+    location.replace('./');
+</script>
+----------------------------------------
+------------------delete.jsp--------------
+<%@page import="DBC.DB"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+
+<%
+request.setCharacterEncoding("utf-8");
+Connection con =null;
+Statement stm =null;
+
+String idx = request.getParameter("idx");
+try{
+	con = DB.getConnection();
+	stm = con.createStatement();
+    
+    String sql = "DELETE FROM board_tbl where idx = "+idx;
+    ResultSet rs = stm.executeQuery(sql);
+    rs.next();
+}catch(Exception e){
+	e.printStackTrace();
+}
+
+%>
+<script>
+    alert('완료되었습니다.');
+    location.replace('./');
+</script>
+----------------------------------------------------------
+-----------comment_delete.jsp-----------------------
+<%@page import="DBC.DB"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+
+<%
+request.setCharacterEncoding("utf-8");
+    Connection con =null;
+    Statement stm =null;
+
+    String idx = request.getParameter("idx");
+    try{
+    	con = DB.getConnection();
+    	stm = con.createStatement();
+        
+        String sql = "DELETE FROM comment_tbl where idx = "+idx;
+        ResultSet rs = stm.executeQuery(sql);
+        rs.next();
+    }catch(Exception e){
+    	e.printStackTrace();
+    }
+    
+%>
+<script>
+    alert('완료되었습니다.');
+    location.replace('./')
+</script>
+-----------------------------------------
+------------db.class-------------------
+package DBC;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+public class DB {
+	public static Connection getConnection() throws Exception{
+		
+		Class.forName("oracle.jdbc.OracleDriver");
+		Connection con= DriverManager.getConnection(
+				"jdbc:oracle:thin:@//localhost:1521/orcl","system","9900op1212");
+		return con;
+			}
+}
