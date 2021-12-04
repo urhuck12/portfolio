@@ -1,0 +1,533 @@
+----------------index.jsp---------------------------------
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<jsp:include page="header.jsp"></jsp:include>
+	<section style=" position: fixed; top: 60px; width: 100%; height: 100%; 
+				    background-color: gray">
+	<h2 style="text-align: center;">소제목</h2>
+	<form style= " display:flex; text-align: center; align-items: center; justify-content: center;">
+		
+	</form>
+	
+	</section>
+	<jsp:include page="footer.jsp"></jsp:include>
+</body>
+</html>
+
+----------------------------------------------------------------
+-----------------join.jsp---------------------------------
+<%@page import="DBC.DB"%>
+
+<%@page import="java.sql.*"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<script type="text/javascript" src="ch.js"></script>
+	<jsp:include page="header.jsp"></jsp:include>
+	<section
+		style="position: fixed; top: 60px; width: 100%; height: 100%; 
+		background-color: gray; padding-left: 20px">
+		<h2 style="text-align: center;">홈쇼핑 회원등록</h2>
+		<form name="fo" action="action.jsp" method="post" 
+			style="display: flex; text-align: center; align-items: center; justify-content: center;">
+			<input type="hidden" name="mode" value="insert">
+			<table border="1">
+			
+			<%
+			request.setCharacterEncoding("utf-8");
+				Connection con = null;
+				Statement stm = null;
+				String custno = "";
+				
+				try{					
+					con = DB.getConnection();
+					stm=con.createStatement();
+					String sql = "SELECT MAX(custno)+1 custno FROM member_tbl_02";
+					ResultSet rs= stm.executeQuery(sql);
+					rs.next();
+					custno = rs.getString("custno");				
+					
+				}catch(Exception e){
+					e.printStackTrace();
+				}		
+			
+			%>
+				<tr>
+					<td>회원번호(자동생성)</td>
+					<td><input type="text" name="custno" value="<%=custno %>" ></td>
+				</tr>
+
+				<tr>
+					<td>회원성명</td>
+					<td><input type="text" name="custname"></td>
+				</tr>
+
+				<tr>
+					<td>회원전화</td>
+					<td><input type="text" name="phone"></td>
+				</tr>
+        
+				<tr>
+					<td>회원주소</td>
+					<td><input type="text" name="address"></td>
+				</tr>
+        
+				<tr>
+					<td>가입일자</td>
+					<td><input type="text" name="joindate"></td>
+				</tr>
+        
+				<tr>
+					<td>고객등급[A:VIP,B:일반,C:직원]</td>
+					<td><input type="text" name="grade"></td>
+				</tr>
+        
+				<tr>
+					<td>도시코드</td>
+					<td><input type="text" name="city"></td>
+				</tr>
+        
+				<tr>
+					<td colspan="2">
+					<input type="submit" value="등 록" onclick="return Ck()">
+					<input type="button" value="조 회" onclick="return memberlist()">					
+					</td>				
+				</tr>
+				
+			</table>
+		</form>
+
+	</section>
+	<jsp:include page="footer.jsp"></jsp:include>
+</body>
+</html>
+
+-----------------------------------------------------------------------------------
+-----------------------list.jsp------------------------------
+
+<%@page import="DBC.DB"%>
+<%@page import="java.sql.*"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<jsp:include page="header.jsp"></jsp:include>
+	<section
+		style="position: fixed; top: 60px; width: 100%; height: 100%; background-color: gray">
+		<h2 style="text-align: center;">회원목록조회/수정</h2>
+		<form
+			style="display: flex; text-align: center; align-items: center; justify-content: center;">
+			<table border="1">
+
+				<tr>
+					<td>회원번호</td>
+					<td>회원성명</td>
+					<td>전화번호</td>
+					<td>주소</td>
+					<td>가입일자</td>
+					<td>고객등급</td>
+					<td>거주지역</td>
+				</tr>
+				<%
+				Connection con = null;
+				Statement stm = null;
+				String grade = "";
+
+				try {
+					con = DB.getConnection();
+					stm = con.createStatement();
+					String sql = "SELECT * FROM member_tbl_02";
+					ResultSet rs = stm.executeQuery(sql);
+
+					while (rs.next()) {
+						grade = rs.getString("grade");
+						switch (grade) {
+						case "A":
+					grade = "VIP";
+					break;
+
+						case "B":
+					grade = "직원";
+					break;
+
+						case "C":
+					grade = "일반";
+					break;
+						}
+				%>
+				<tr>
+					<td><a
+						href="modify.jsp?mod_custno=<%=rs.getString("custno")%>"><%=rs.getString("custno")%></a></td>
+					<td><%=rs.getString("custname")%></td>
+					<td><%=rs.getString("phone")%></td>
+					<td><%=rs.getString("address")%></td>
+					<td><%=rs.getDate("joindate")%></td>
+					<td><%=grade%></td>
+					<td><%=rs.getString("city")%></td>
+				</tr>
+				<%
+				}
+
+				} catch (Exception e) {
+				e.printStackTrace();
+				}
+				%>
+			</table>
+		</form>
+
+	</section>
+	<jsp:include page="footer.jsp"></jsp:include>
+</body>
+</html>
+-------------------------------------------------------------------------
+-------------salary.jsp------------------------
+
+<%@page import="DBC.DB"%>
+<%@page import="java.sql.*"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<jsp:include page="header.jsp"></jsp:include>
+	<section style=" position: fixed; top: 60px; width: 100%; height: 100%; 
+				    background-color: gray">
+	<h2 style="text-align: center;">소제목</h2>
+	<form style= " display:flex; text-align: center; align-items: center; justify-content: center;">
+		<table border="1">
+		
+			<tr>
+				<td>회원번호</td>
+				<td>회원성명</td>
+				<td>고객등급</td>
+				<td>매출</td>
+			</tr>
+			<%
+			Connection con = null;
+			Statement stm = null;
+			String grade = "";
+			
+			try{
+				con=DB.getConnection();
+				stm=con.createStatement();
+				String sql = "SELECT me.custno, me.custname, me.grade,SUM(mo.price) price "
+							+"FROM member_tbl_02 me, money_tbl_02 mo "
+							+"WHERE me.custno = mo.custno "
+							+"GROUP BY me.custno, me.custname, me.grade "
+							+"ORDER BY SUM(mo.price) DESC ";
+				ResultSet rs= stm.executeQuery(sql);
+				while(rs.next()){
+					grade = rs.getString("grade");
+					switch(grade){
+					case "A" :
+						grade = "VIP";
+						break;
+						
+					case "B" :
+						grade = "직원";
+						break;
+						
+					case "C" :
+						grade = "일반";
+						break;
+					}
+					%>
+						<tr>
+							<td><%=rs.getString("custno") %></td>
+							<td><%=rs.getString("custname") %></td>
+							<td><%=grade %></td>
+							<td><%=rs.getString("price") %></td>
+						</tr>
+					<%
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+					
+			%>
+      
+		</table>
+	</form>
+	
+	</section>
+	<jsp:include page="footer.jsp"></jsp:include>
+</body>
+</html>
+
+----------------------------------------------------------
+------------modify.jsp
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="DBC.DB"%>
+<%@page import="java.sql.*"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<script type="text/javascript" src="ch.js"></script>
+	<jsp:include page="header.jsp"></jsp:include>
+	<section style=" position: fixed; top: 60px; width: 100%; height: 100%; 
+				    background-color: gray">
+	<h2 style="text-align: center;">소제목</h2>
+	<form name="fo" action="action.jsp" method="post"  
+	style= " display:flex; text-align: center; align-items: center; justify-content: center;">
+	<input type="hidden" name="mode" value="modify">
+		<table border="1">
+			<%
+			request.setCharacterEncoding("utf-8");
+				Connection con = null;
+				Statement stm = null;
+				String mod_custno = request.getParameter("mod_custno");
+				String custname = "";
+				String phone = "";
+				String address = "";
+				Date joindate ;
+				String joindateStr = "";
+				String grade = "";
+				String city = "";
+				
+				try{
+					
+					con = DB.getConnection();
+					stm=con.createStatement();
+					String sql = "SELECT * FROM member_tbl_02 WHERE custno= "+ mod_custno;
+					ResultSet rs= stm.executeQuery(sql);
+					rs.next();
+					mod_custno = rs.getString("custno");
+					custname = rs.getString("custname");
+					phone = rs.getString("phone");
+					address = rs.getString("address");
+					joindate = rs.getDate("joindate");
+					grade = rs.getString("grade");
+					city = rs.getString("city");
+					
+					SimpleDateFormat tranceFormet = new SimpleDateFormat("yyyy-MM-dd");
+					joindateStr= tranceFormet.format(joindate);					
+					
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			
+			
+			%>
+				<tr>
+					<td>회원번호(자동생성)</td>
+					<td><input type="text" name="custno" value="<%=mod_custno %>" ></td>
+				</tr>
+
+				<tr>
+					<td>회원성명</td>
+					<td><input type="text" name="custname" value="<%=custname %>"></td>
+				</tr>
+
+				<tr>
+					<td>회원전화</td>
+					<td><input type="text" name="phone" value="<%=phone %>"></td>
+				</tr>
+        
+				<tr>
+					<td>회원주소</td>
+					<td><input type="text" name="address" value="<%=address %>"></td>
+				</tr>
+        
+				<tr>
+					<td>가입일자</td>
+					<td><input type="text" name="joindate"  value="<%=joindateStr %>"></td>
+				</tr>
+        
+				<tr>
+					<td>고객등급[A:VIP,B:일반,C:직원]</td>
+					<td><input type="text" name="grade"  value="<%=grade %>"></td>
+				</tr>
+        
+				<tr>
+					<td>도시코드</td>
+					<td><input type="text" name="city"  value="<%=city %>"></td>
+				</tr>
+        
+				<tr>
+					<td colspan="2">
+					<input type="submit" value="수 정" onclick="return modify()">
+					<input type="button" value="조 회" onclick="return memberlist()">					
+					</td>				
+				</tr>	
+		
+		</table>
+	</form>
+	
+	</section>
+	<jsp:include page="footer.jsp"></jsp:include>
+</body>
+</html>
+-------------------------------------------------------
+--------------action.jsp------------------
+<%@page import="DBC.DB"%>
+<%@page import="java.sql.*"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<%
+	request.setCharacterEncoding("utf-8");
+	Connection con = null;
+	Statement stm = null;
+	String mode = request.getParameter("mode");
+	
+	String custno = request.getParameter("custno");
+	String custname = request.getParameter("custname");
+	String phone = request.getParameter("phone");
+	String address = request.getParameter("address");
+	
+	String joindate = request.getParameter("joindate");
+	String grade = request.getParameter("grade");
+	String city = request.getParameter("city");
+	
+	try{		
+		con = DB.getConnection();
+		stm=con.createStatement();
+		String sql = " ";
+			switch(mode){
+			case "insert" :
+				sql = "INSERT INTO member_tbl_02 VALUES("+ 
+					  custno + "," +
+					  "'" + custname + "',"+ 
+					  "'" + phone + "',"+ 
+					  "'" + address + "',"+ 
+					  "TO_DATE('" + joindate + "','yyyy-MM-dd'),"+ 
+					  "'" + grade + "',"+ 
+					  "'" + city + "')";
+				stm.executeUpdate(sql);
+				%>
+				<jsp:forward page="join.jsp"></jsp:forward>
+				<%
+				break;
+			
+			case "modify" :
+				sql = "UPDATE member_tbl_02 SET "+
+					  "custname= '" + custname + "',"+ 
+					  "phone= '" + phone + "',"+ 
+					  "address= '" + address + "',"+ 
+					  "joindate= TO_DATE('" + joindate + "','yyyy-MM-dd'),"+ 
+					  "grade= '" + grade + "',"+ 
+					  "city= '" + city + "' "+
+					  "WHERE custno= " + custno;
+				stm.executeUpdate(sql);
+				%>
+				<jsp:forward page="list.jsp"></jsp:forward>
+				<%
+				break;
+			}
+			} catch(Exception e){
+				e.printStackTrace();
+			}
+	
+	%>
+
+</body>
+</html>
+
+-------------------------------------------------------------------
+--------------ck.js
+function Ck() {
+	if (document.fo.custname.value.length == 0) {
+		alert("이름없음");
+		fo.custname.focus();
+		return false;
+	}
+	if (document.fo.phone.value.length == 0) {
+		alert("이름없음");
+		fo.phone.focus();
+		return false;
+	}
+
+	if (document.fo.address.value.length == 0) {
+		alert("이름없음");
+		fo.address.focus();
+		return false;
+	}
+
+	if (document.fo.joindate.value.length == 0) {
+		alert("이름없음");
+		fo.joindate.focus();
+		return false;
+	}
+
+	if (document.fo.grade.value.length == 0) {
+		alert("이름없음");
+		fo.grade.focus();
+		return false;
+	}
+
+	if (document.fo.city.value.length == 0) {
+		alert("이름없음");
+		fo.city.focus();
+		return false;
+	}
+	joinOk();
+	return true;
+}
+
+function joinOk(){
+	alert("회원가입완료");
+}
+
+function modify(){
+	alert("수정완료")
+}
+
+function memberlist(){
+	window.location = "list.jsp"
+}
+
+-----------------------------------------------------
+-------------db.class-------------------
+package DBC;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+public class DB {
+	public static Connection getConnection() throws Exception{
+		
+		Class.forName("oracle.jdbc.OracleDriver");
+		Connection con= DriverManager.getConnection(
+				"jdbc:oracle:thin:@//localhost:1521/orcl","system","9900op1212");
+		return con;
+		
+	}
+}
+
+
