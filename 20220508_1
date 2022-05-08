@@ -1,0 +1,490 @@
+======================INDEX==============================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="st.css">
+</head>
+<body>
+<h1>인사관리시스템</h1>
+<hr>
+<%@ include file="co.jsp" %>
+<fieldset style="width: 700px;">
+	<legend>인사관리메인메뉴</legend>
+	<input id="in_bt" type="button" value="조회" onclick="location.href='read.jsp'">
+	<input id="in_bt" type="button" value="사원등록" onclick="location.href='join.jsp'">
+	<input id="in_bt" type="button" value="정보변경" onclick="location.href='modify.jsp'">
+	<br>
+	<input id="in_bt" type="button" value="퇴사처리" onclick="location.href='out.jsp'">
+	<input id="in_bt" type="button" value="종료">
+</fieldset>
+</body>
+</html>
+
+=======================================================================================
+================================조회=======================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="st.css">
+</head>
+<body>
+<h1>인사관리시스템</h1>
+<hr>
+<%@ include file="co.jsp" %>
+<fieldset style="width: 700px;">
+	<legend>인사관리 조회</legend>
+	<form action="read_action.jsp">
+	<table>
+		<tr>
+			<td>
+				<input type="radio" name="mode" value="id"> 사원번호로 조회
+				<input type="text" name="id"> 
+			</td>	
+
+		</tr>
+		<tr>
+				<td>
+				<input type="radio" name="mode" value="dept"> 부서명으로 조회
+				 <select name="dept">
+				 	<%
+				 		String dept = "";
+				 		try{
+				 			stm = con.createStatement();
+				 			String sql = "select * from personnel";
+				 			rs = stm.executeQuery(sql);
+				 			while(rs.next()){
+				 				dept = rs.getString("dept");
+								%>
+								<option value="'<%=dept%>'"><%=dept%></option>
+								<%				 				
+				 			}
+				 		}catch(Exception e){
+				 			e.printStackTrace();
+				 		}
+				 	%>
+				 	
+				 </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<input id="re_bt" type="submit" value="조회">
+				<input id="re_bt" type="button" value="취소" onclick="location.href='index.jsp'">
+			</td>
+		</tr>
+
+	</table>
+	</form>
+</fieldset>
+</body>
+</html>
+
+
+=======================================================================================
+================================조회실행=======================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="st.css">
+</head>
+<body>
+<h1>직원정보조회결과</h1>
+<hr>
+<%@ include file="co.jsp" %>
+	<table id="tb1">
+		<tr id="tr1">
+			<td id="td1">사번</td>
+			<td id="td1">성명</td>
+			<td id="td1">직급</td>
+			<td id="td1">직책</td>
+			<td id="td1">연락처</td>
+			<td id="td1">소속부서</td>
+		</tr>
+		
+		<%
+			String dept = request.getParameter("dept");
+			String id = request.getParameter("id");
+			String mode = request.getParameter("mode");
+			try{
+				stm = con.createStatement();
+				String sql = "";
+				switch(mode){
+				case "id" :
+					sql = "select * from personnel where id= " + id;
+					break;
+					
+				case "dept" :
+					sql = "select * from personnel where dept= " + dept;
+					break;
+				}
+				rs = stm.executeQuery(sql);
+				while(rs.next()){
+				%>
+				<tr id="tr1">
+					<td id="td1"><%=rs.getString("id") %></td>
+					<td id="td1"> <%=rs.getString("name") %></td>
+					<td id="td1"><%=rs.getString("position") %></td>
+					<td id="td1"><%=rs.getString("duty") %></td>
+					<td id="td1"><%=rs.getString("phone") %></td>
+					<td id="td1"><%=rs.getString("dept") %></td>
+				</tr>
+			<%
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		%>
+	
+	</table>
+</body>
+</html>
+=======================================================================================
+================================조회실행=======================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="st.css">
+</head>
+<body>
+	<h1>인사관리 사원등록화면</h1>
+	<hr>
+	<%@ include file="co.jsp"%>
+	<fieldset style="width: 700px;">
+		<legend>인사관리 사원등록</legend>
+		<form action="join_action.jsp">
+			<table>
+				<tr>
+					<td id="td2">성명 </td> <td id="td3">:</td>
+					<td><input name="name"></td>
+				</tr>
+
+				<tr>
+					<td id="td2">사원번호 </td> <td id="td3">:</td>
+					<td><input name="id"></td>
+				</tr>
+
+				<tr>
+					<td id="td2">소속부서 </td> <td id="td3">:</td>
+					<td>
+					 <select name="dept" style="width: 177px; height: 23px;">
+				 	<%
+				 		String dept = "";
+				 		try{
+				 			stm = con.createStatement();
+				 			String sql = "select * from personnel";
+				 			rs = stm.executeQuery(sql);
+				 			while(rs.next()){
+				 				dept = rs.getString("dept");
+								%>
+								<option value="<%=dept%>"><%=dept%></option>
+								<%				 				
+				 			}
+				 		}catch(Exception e){
+				 			e.printStackTrace();
+				 		}
+				 	%>
+				 	
+				 </select>
+					</td>
+				</tr>
+
+				<tr>
+					<td id="td2">직급 </td> <td id="td3">:</td>
+					<td>
+						<select name="position" style="width: 177px; height: 23px;">
+							
+							<option value="1">1급</option>
+							<option value="2">2급</option>
+							<option value="3">3급</option>
+							<option value="4">4급</option>
+						</select>
+					</td>
+				</tr>
+
+				<tr>
+					<td id="td2">직책 </td> <td id="td3">:</td>
+					<td><input name="duty"></td>
+				</tr>
+
+				<tr>
+					<td id="td2">연락처 </td><td>:</td>
+					<td><input name="phone"></td>
+				</tr>
+
+
+
+				<tr>
+					<td colspan="3">
+						<input id="re_bt" type="submit" value="등록">
+					 	<input id="re_bt" type="button" value="취소"
+						onclick="location.href='index.jsp'"></td>
+				</tr>
+
+			</table>
+		</form>
+	</fieldset>
+</body>
+</html>
+
+
+=======================================================================================
+================================사원등록실행=======================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="st.css">
+</head>
+<body>
+<h1>직원정보조회결과</h1>
+<hr>
+<%@ include file="co.jsp" %>
+
+		<%
+			String id = request.getParameter("id");
+			String name = request.getParameter("name");
+			String dept = request.getParameter("dept");
+			String position = request.getParameter("position");
+			String duty = request.getParameter("duty");
+			String phone = request.getParameter("phone");
+			try{
+				String sql = "insert into personnel values(?,?,?,?,?,?) ";
+				ps = con.prepareStatement(sql);
+				
+				ps.setString(1, id);
+				ps.setString(2, name);
+				ps.setString(3, dept);
+				ps.setString(4, position);
+				ps.setString(5, duty);
+				ps.setString(6, phone);
+				ps.executeQuery();
+				
+				%>
+				<jsp:forward page="index.jsp"></jsp:forward>
+				<%
+
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		%>
+
+</body>
+</html>
+
+
+=======================================================================================
+================================사원수정=======================================================
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="st.css">
+</head>
+<body>
+	<h1>인사관리 사원등록화면</h1>
+	<hr>
+	<%@ include file="co.jsp"%>
+	<fieldset style="width: 700px;">
+		<legend>인사관리 사원등록</legend>
+		<form action="modify_action.jsp">
+			<table>
+				<tr>
+					<td id="td2">성명 </td> <td id="td3">:</td>
+					<td><input name="name"></td>
+				</tr>
+
+				<tr>
+					<td id="td2">사원번호 </td> <td id="td3">:</td>
+					<td><input name="id"></td>
+				</tr>
+
+				<tr>
+					<td id="td2">소속부서 </td> <td id="td3">:</td>
+					<td>
+					 <select name="dept" style="width: 177px; height: 23px;">
+				 	<%
+				 		String dept = "";
+				 		try{
+				 			stm = con.createStatement();
+				 			String sql = "select * from personnel";
+				 			rs = stm.executeQuery(sql);
+				 			while(rs.next()){
+				 				dept = rs.getString("dept");
+								%>
+								<option value="<%=dept%>"><%=dept%></option>
+								<%				 				
+				 			}
+				 		}catch(Exception e){
+				 			e.printStackTrace();
+				 		}
+				 	%>
+				 	
+				 </select>
+					</td>
+				</tr>
+
+				<tr>
+					<td id="td2">직급 </td> <td id="td3">:</td>
+					<td>
+						<select name="position" style="width: 177px; height: 23px;">
+							
+							<option value="1">1급</option>
+							<option value="2">2급</option>
+							<option value="3">3급</option>
+							<option value="4">4급</option>
+						</select>
+					</td>
+				</tr>
+
+				<tr>
+					<td id="td2">직책 </td> <td id="td3">:</td>
+					<td><input name="duty"></td>
+				</tr>
+
+				<tr>
+					<td id="td2">연락처 </td><td>:</td>
+					<td><input name="phone"></td>
+				</tr>
+        
+				<tr>
+					<td colspan="3">
+						<input id="re_bt" type="submit" value="등록">
+					 	<input id="re_bt" type="button" value="취소"
+						onclick="location.href='index.jsp'"></td>
+				</tr>
+
+			</table>
+		</form>
+	</fieldset>
+</body>
+</html>
+
+=======================================================================================
+================================사원수정실행=======================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="st.css">
+</head>
+<body>
+
+<%@ include file="co.jsp" %>
+
+		<%
+			String id = request.getParameter("id");
+			String name = request.getParameter("name");
+			String dept = request.getParameter("dept");
+			String position = request.getParameter("position");
+			String duty = request.getParameter("duty");
+			String phone = request.getParameter("phone");
+			try{
+				String sql = "update personnel set name= ?,dept= ?,position= ?,duty= ?,phone= ? where id= " +id;
+				ps = con.prepareStatement(sql);
+				
+				
+				ps.setString(1, name);
+				ps.setString(2, dept);
+				ps.setString(3, position);
+				ps.setString(4, duty);
+				ps.setString(5, phone);
+				ps.executeQuery();
+				
+				%>
+				<jsp:forward page="index.jsp"></jsp:forward>
+				<%
+
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		%>
+
+</body>
+</html>
+
+
+=======================================================================================
+================================퇴사처리=======================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="st.css">
+</head>
+<body>
+	<h1>인사관리 사원등록 화면</h1>
+
+	<%@ include file="co.jsp"%>
+
+	<hr>
+	<fieldset style="width: 700px;">
+		<legend> 인사관리 사원등록 </legend>
+		<form name="listFrom" >
+		<div>
+
+			<table>
+				<tr>
+					<td>사원번호 : </td>
+					<td><input name="id"></td>
+				</tr>
+				<tr>
+					<td>성 명&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</td>
+					<td><input name="name"></td>
+				</tr>
+				<%
+					request.setCharacterEncoding("utf-8");				
+					String id = request.getParameter("id");
+					String name = request.getParameter("name"); 
+					
+					try{
+						stm = con.createStatement();
+						String sql = "delete from personnel where id = " +id +" and name= " + "'"+name+"'";
+						stm.executeUpdate(sql);
+
+						
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				
+				%>				
+
+			</table>
+			<input id="list_bt" type="submit" value="삭제" onclick="location.href='index.jsp'"> 
+			<input id="list_bt" type="button" value="취소" onclick="location.href='index.jsp'"> 
+
+		</div>
+		</form>
+	</fieldset>
+
+
+</body>
+</html>
