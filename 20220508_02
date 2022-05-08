@@ -1,0 +1,526 @@
+
+=======================================================================================
+================================INDEX=======================================================
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<jsp:include page="header.jsp"></jsp:include>
+<jsp:include page="nav.jsp"></jsp:include>
+<%@ include file="db_connect.jsp" %>
+<section>
+	<h2>과정평가형 자격 CBQ</h2>
+내용~~~
+</section>
+<jsp:include page="footer.jsp"></jsp:include>
+
+</body>
+</html>
+
+
+=======================================================================================
+================================CSS=======================================================
+@charset "UTF-8";
+
+header{
+	position: fixed;
+	top: 0px;
+	width: 100%;
+	height: 60px;
+	line-height: 60px;
+	background-color: blue;
+	color: white;
+	text-align: center;
+}
+
+h3,h2{
+	margin: auto;
+	text-align: center;
+}
+
+nav{
+	position: fixed;
+	top: 60px;
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	background-color: purple;
+	color: white;	
+}
+
+section {
+	position: fixed;
+	top: 100px;
+	width: 100%;
+	height: 100%;
+	background-color: gray;
+
+}
+
+footer{
+	position: fixed;
+	bottom: 0px;
+	width: 100%;
+	height: 60px;
+	line-height: 60px;
+	background-color: blue;
+	color: white;
+	text-align: center;
+}
+
+table,tr,td {
+	border: 1px solid;
+}
+
+
+=======================================================================================
+================================환자조회=======================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@page import="java.sql.*"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<jsp:include page="header.jsp"></jsp:include>
+<jsp:include page="nav.jsp"></jsp:include>
+<%@ include file="db_connect.jsp" %>
+<section>
+	<h2>환자조회</h2>
+	<form>
+		<table style="margin: auto;">
+			<tr>
+				<td>환자번호</td>
+				<td>환자성명</td>
+				<td>생년월일</td>
+				<td>성별</td>
+				<td>전화번호</td>
+				<td>지역</td>
+			</tr>
+			<%
+				String p_no = "";
+				String p_name="";
+				String p_birth= "";
+				String p_gender ="";
+				String p_tel1 ="";
+				String p_tel2 ="";
+				String p_tel3 ="";
+				String tel_all= "";
+				String p_city= "";
+				
+		
+				try{
+					stm = con.createStatement();
+					String sql = "select *from tbl_01";
+					rs = stm.executeQuery(sql);
+					while(rs.next()){
+						/* 생년월일 */
+						p_birth = rs.getString("p_birth");
+						String bi_1 = p_birth.substring(0,4);
+						String bi_2 = p_birth.substring(4,6);
+						String bi_3 = p_birth.substring(6,8);
+						String birth = bi_1 +"년"+ bi_2 +"월" +bi_3 + "일";						
+					
+					/* 성별 */
+					p_gender = rs.getString("p_gender");
+					switch(p_gender){
+
+					case "M" :
+						p_gender = "남";
+						break;
+					case "F" :
+						p_gender = "여";
+						break;
+						
+					}
+					
+					/* 전화번호 */
+					p_tel1 = rs.getString("p_tel1");
+					p_tel2 = rs.getString("p_tel2");
+					p_tel3 = rs.getString("p_tel3");
+					tel_all = p_tel1 + "-" + p_tel2 +"-"+ p_tel3;
+					
+					/* 지역 */
+					p_city = rs.getString("p_city");
+					switch(p_city){
+
+					case "10" :
+						p_city = "서울";
+						break;
+					case "20" :
+						p_city = "경기";
+						break;
+					case "30" :
+						p_city = "강원";
+						break;
+					case "40" :
+						p_city = "대구";
+						break;					
+						
+					}
+					%>
+				<tr>
+					<td><%=rs.getString("p_no") %></td>
+					<td><%=rs.getString("p_name") %></td>
+					<td><%=birth%></td>
+					<td><%=p_gender%></td>
+					<td><%=tel_all%></td>
+					<td><%=p_city%></td>
+				</tr>
+				<%
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+						
+			%>
+		
+		</table>
+	
+	</form>
+</section>
+<jsp:include page="footer.jsp"></jsp:include>
+
+</body>
+</html>
+
+
+=======================================================================================
+================================검사결과입력=======================================================
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<jsp:include page="header.jsp"></jsp:include>
+	<jsp:include page="nav.jsp"></jsp:include>
+	<%@ include file="db_connect.jsp"%>
+	<section>
+		<h2>검사결과입력</h2>
+		<form name="testForm" action="action.jsp">
+			<input type="hidden" name="mode" value="insert">
+			<table>
+				<tr>
+					<td>환자번호</td>
+					<td><input name="p_no">예)1001</td>
+				</tr>
+				<tr>
+					<td>검사코드</td>
+					<td>
+						<select name="t_code">
+							<option>검사명</option>
+							<option value="T001">[T001]결핵</option>
+							<option value="T002">[T002]장티푸스</option>
+							<option value="T003">[T003]수두</option>
+							<option value="T004">[T004]홍역</option>
+							<option value="T005">[T005]콜레라</option>						
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>검사시작일자</td>
+					<td><input name="t_sdate"></td>
+				</tr>
+				<tr>
+					<td>검사상태</td>
+					<td>
+						<input type="radio" name="t_status" value="1">검사중
+						<input type="radio" name="t_status" value="2">검사완료
+					</td>
+				</tr>
+				<tr>
+					<td>검사완료일자</td>
+					<td><input name="t_ldate"></td>
+				</tr>
+
+				<tr>
+					<td>검사결과</td>
+					<td>						
+						<input type="radio" name="t_result" value="X">미입력
+						<input type="radio" name="t_result" value="P">양성
+						<input type="radio" name="t_result" value="N">음성
+					
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan="2" style="text-align: center;">
+						<input type="submit" value="검사결과등록" onclick="return ck()">
+						<input type="reset" value="다시쓰기">
+						
+					</td>
+				</tr>
+
+			</table>
+
+		</form>
+	</section>
+	<jsp:include page="footer.jsp"></jsp:include>
+	
+	<script type="text/javascript">
+		function ck(){
+			if(document.testForm.p_no.value.length ==0){
+				alert("환자번호없음");
+				testForm.p_no.focus();
+				return false;
+			}
+			return true;
+		}
+	
+	</script>
+
+</body>
+</html>
+
+
+=======================================================================================
+================================검사결과조회=======================================================
+
+<%@page import="java.text.SimpleDateFormat"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@page import="java.sql.*"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<jsp:include page="header.jsp"></jsp:include>
+<jsp:include page="nav.jsp"></jsp:include>
+<%@ include file="db_connect.jsp" %>
+<section>
+	<h2>검사결과조회</h2>
+	<form>
+		<table style="margin: auto;">
+			<tr>
+				<td>환자번호</td>
+				<td>환자성명</td>
+				<td>검사명</td>
+				<td>검사시작일</td>
+				<td>검사상태</td>
+				<td>검사완료일</td>
+				<td>검사결과</td>
+			</tr>
+			<%
+				String p_no = "";
+				String p_name="";
+				String t_name= "";
+				String t_sdate ="";
+				Date sdate;
+				String t_status ="";				
+				String t_ldate ="";
+				Date ltate;
+				String t_result= "";
+
+				try{
+					stm = con.createStatement();
+					String sql = "select t1.p_no,t1.p_name,t_name,t_sdate,t_status,t_ldate,t_result "+
+								 "from tbl_01 t1, tbl_02 t2, tbl_03 t3 "+
+								 "where t1.p_no = t3.p_no and t2.t_code= t3.t_code "+
+								 "order by t1.p_no";
+					rs = stm.executeQuery(sql);
+					while(rs.next()){
+						sdate = rs.getDate("t_sdate");
+						ltate = rs.getDate("t_ldate");
+						
+						SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd");
+						t_sdate = transFormat.format(sdate);
+						t_ldate = transFormat.format(ltate);
+						
+						t_result = rs.getString("t_result");
+						switch(t_result){
+						case "X" :
+							t_result = "미입력";
+							break;
+							
+						case "P" :
+							t_result = "양성";
+							break;
+							
+						case "N" :
+							t_result = "음성";
+							break;
+							
+						}
+						
+					
+					%>
+				<tr>
+					<td><%=rs.getString("p_no") %></td>
+					<td><%=rs.getString("p_name") %></td>
+					<td><%=rs.getString("t_name") %></td>
+					<td><%=t_sdate%></td>
+					<td><%=rs.getString("t_status") %></td>					
+					<td><%=t_ldate%></td>
+					<td><%=t_result%></td>
+				</tr>
+				<%
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			%>
+		
+		</table>
+	
+	</form>
+</section>
+<jsp:include page="footer.jsp"></jsp:include>
+
+</body>
+</html>
+
+
+=======================================================================================
+================================지역별검사건수=======================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@page import="java.sql.*"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<jsp:include page="header.jsp"></jsp:include>
+<jsp:include page="nav.jsp"></jsp:include>
+<%@ include file="db_connect.jsp" %>
+<section>
+	<h2>환자조회</h2>
+	<form>
+		<table style="margin: auto;">
+			<tr>
+				<td>지역코드</td>
+				<td>지역명</td>
+				<td>검사건수</td>
+
+			</tr>
+			<%
+				String p_city = "";
+				String t_code = "";
+				String city_name = "";
+		
+				try{
+					stm = con.createStatement();
+					String sql = "select t1.p_city, count(t3.t_code) as t_code "+
+								 "from tbl_01 t1, tbl_03 t3 "+
+								 "where t1.p_no = t3.p_no "+
+								 "group by t1.p_city "+
+								 "order by t_code desc"	;
+					rs = stm.executeQuery(sql);
+					while(rs.next()){
+						
+					/* 지역 */
+					p_city = rs.getString("p_city");
+					city_name = rs.getString("p_city");
+					t_code = rs.getString("t_code");
+					switch(city_name){
+
+					case "10" :
+						p_city = "서울";
+						break;
+					case "20" :
+						p_city = "경기";
+						break;
+					case "30" :
+						p_city = "강원";
+						break;
+					case "40" :
+						p_city = "대구";
+						break;					
+						
+					}
+					%>
+				<tr>
+					<td><%=city_name%></td>
+					<td><%=p_city%></td>
+					<td><%=t_code%></td>
+					
+				</tr>
+				<%
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+						
+			%>
+		
+		</table>
+	
+	</form>
+</section>
+<jsp:include page="footer.jsp"></jsp:include>
+
+</body>
+</html>
+
+
+=======================================================================================
+================================list =======================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<%@ include file="db_connect.jsp"%>
+	<%
+		String mode = request.getParameter("mode");
+		String p_no = request.getParameter("p_no");
+		String t_code = request.getParameter("t_code");
+		String t_sdate = request.getParameter("t_sdate");
+		String t_status = request.getParameter("t_status");
+		String t_ldate = request.getParameter("t_ldate");
+		String t_result = request.getParameter("t_result");
+		String sql = " ";
+		
+		try{
+			switch(mode){
+			case "insert":
+				sql = "insert into tbl_03 values(?, ?, ?, ?, ?, ?)";  
+				ps = con.prepareStatement(sql);
+				ps.setString(1, p_no);
+				ps.setString(2, t_code);
+				ps.setString(3, t_sdate);
+				ps.setString(4, t_status);
+				ps.setString(5, t_ldate);
+				ps.setString(6, t_result);
+				ps.executeQuery();
+				
+				%>
+				<jsp:forward page="list.jsp"></jsp:forward>
+				<%
+				break;
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	
+	%>
+</body>
+</html>
