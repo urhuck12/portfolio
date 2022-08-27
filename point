@@ -1,0 +1,123 @@
+======================셀렉트박스를 db에서 끌어다가 사용 예시 1 =========================
+<!-- select id="name_sw"은 Script 사용을 하기 위해서 기재 -->
+<td>회원명</td>
+<td>
+  <select id="name_sw" onchange="sw1()" name="name_sw">
+    <option value="">회원명</option>
+    <%
+      String C_NAME = "";
+      String C_NO = "";
+      try{
+        stm = con.createStatement();
+        String sql = "select * from TBL_MEMBER_202201";
+        rs = stm.executeQuery(sql);
+        while(rs.next()){
+          C_NAME = rs.getString("C_NAME");
+          C_NO = rs.getString("C_NO");
+          %>
+          <option value="<%=C_NO%>"><%=C_NAME%></option>
+          <%-- <%=C_NAME%>을 옵션으로 선택시에 해당 C_NAME에 있는 같은 행에 <%=C_NO%>이 선택이됨  --%> 
+          <%
+        }
+      }catch(Exception e ){
+        e.printStackTrace();
+      }						
+    %>
+  </select>
+</td>
+        
+function sw1(){
+			/* 1. name_sw(셀렉트박스이름)을 선택했을때 해당 옵션값을 가져와서 var로 선언해줌 */ 
+			var values = document.getElementById('name_sw').value
+			/* 2. 가져온 옵션값을 c_no(input박스)에 넣어줌 */
+			document.getElementById('c_no').value = values;
+			/* 3. 스위치값이 바뀌는 경우 price(수강료input)는 초기화 */
+			document.getElementById('price').value = "";			
+		}
+====================================================================================================
+======================셀렉트박스를 db에서 끌어다가 사용 예시 2 =========================
+<td>강의명</td>
+  <td>
+  <select id="class_sw" onchange="sw2()" name="TEACHER_CODE">
+    <option value="">강의신청</option>
+    <%
+      String CLASS_NAME = "";
+      String TEACHER_CODE = "";
+      try{
+        stm = con.createStatement();
+        String sql = "select * from TBL_TEACHER_202201";
+        rs = stm.executeQuery(sql);
+        while(rs.next()){
+          CLASS_NAME = rs.getString("CLASS_NAME");
+          TEACHER_CODE = rs.getString("TEACHER_CODE");
+          %>
+          <option value="<%=TEACHER_CODE%>"><%=CLASS_NAME%></option>
+          <%
+        }
+      }catch(Exception e ){
+        e.printStackTrace();
+      }						
+    %>
+  </select>
+</td>
+
+function sw2(){
+  /* 1. class_sw(셀렉트박스이름)을 선택했을때 해당 옵션값을 가져와서 var로 선언해줌 */
+  var t_code = document.getElementById('class_sw').value
+  /* 2. 가져온 옵션값을 c_no(input박스) 값을 var로 선언해줌 */
+  var c_no = document.getElementById('c_no').value
+  /* 3. c_no의 value값이 20000 이상일때 t_code의 값은 *1000/2 기존값의 50%할인을함 */
+  if(c_no>='20000'){
+    document.getElementById('price').value = t_code*1000/2;
+  return false;
+  }
+  /* 3. c_no의 value값이 20000만 미만일때 t_code의 값은 *1000 */
+  if(c_no<'20000'){
+    document.getElementById('price').value = t_code*1000;
+    return false;
+  }
+}
+====================================================================================================
+====================== 칼럼이름을 형타입으로 저장했을때 db에서 끌어다가 사용 예시 1 =====================
+- DB입력시 ""로 칼럼명을 감싸면 형타입도 칼럼명으로 쓸수있음 TIMESTAMP일때 초까지 저장됨
+CREATE TABLE board_tbl(
+    idx NUMBER(6) NOT NULL PRIMARY KEY,
+    writer VARCHAR2(20),
+    subject VARCHAR2(255),
+    "content" CLOB,
+    "date" TIMESTAMP
+    );
+
+<%		
+  String idx = request.getParameter("idx");
+  String subject = "";
+  String writer = "";
+  String date = "";
+  String content = "";
+  try {
+    stm = con.createStatement();
+    /* to_char( +"\"date\""+ ",'yyyy-MM-dd HH(시):MI(분)') time 으로 꼭 변환해줘야함 예시'yyyy-MM-dd HH(시):MI(분):SS(초)'*/
+    /* 형타입이 TIMESTAMP일때만 적용 "content"의 CLOB타입은 변환없이 사용가능 */
+    String sql = "select idx,writer,subject,content, to_char( "
+        +"\"date\""+ ",'yyyy-MM-dd HH:MI') time "      
+        +"from bo_1 "
+        +"where idx= " + idx;
+
+    rs = stm.executeQuery(sql);
+    rs.next();
+
+  }catch(Exception e){
+    e.printStackTrace();
+  }
+====================================================================================================
+====================== 특정칼럼의 합산*칼럼값(A칼럼의 갯수또는 합계 * 다른칼럼의 갯수 또는 금액 =====================
+%>
+/* to_char(sum(tc.TUITION),'999,999') price = TUITION의 합산값에 [,]를 추가 */
+/* to_char(sum(tc.TUITION)*tc.TEACHER_CODE,'999,999,999') ex = TUITION의 합산값에 TEACHER_CODE를 곱하여서 [,]를 추가 */
+/* order by tt.TEACHER_CODE 기준으로 정렬 되기때문에 TUITION가 합산이 되는 거임. 없는경우 합산값 안나옴 */
+/* group by tt.TEACHER_CODE, tt.CLASS_NAME, tt.TEACHER_NAME,tc.TEACHER_CODE 에서 tc.TEACHER_CODE를 꼭 추가해줘야함 안그러면 에러남 */
+String sql = "Select tt.TEACHER_CODE, tt.CLASS_NAME, tt.TEACHER_NAME, to_char(sum(tc.TUITION),'999,999') price,to_char(sum(tc.TUITION)*tc.TEACHER_CODE,'999,999,999') ex "
+      +"from TBL_TEACHER_202201 tt, TBL_CLASS_202201 tc "
+      +"where tt.TEACHER_CODE=tc.TEACHER_CODE "
+                +"group by tt.TEACHER_CODE, tt.CLASS_NAME, tt.TEACHER_NAME,tc.TEACHER_CODE " 
+                +"order by tt.TEACHER_CODE";
